@@ -472,6 +472,67 @@ todo-reactjs-18/
 └── README.md
 ```
 
+## 📚 Documentation & Setup Guides
+
+### Comprehensive Server Setup and Testing Guides
+
+This project includes detailed setup and testing documentation for each component:
+
+#### 🚀 **[Master Startup Guide](STARTUP_GUIDE.md)** - **START HERE**
+Complete setup instructions for all servers with comprehensive testing workflow including mock data examples for every operation.
+
+#### 📊 **[JSON Server Guide](JSON_SERVER_GUIDE.md)** 
+Detailed setup and testing guide for the JSON Server database layer (port 3001):
+- Installation and configuration
+- Database schema and relationships  
+- Direct API testing with CURL
+- Query parameters and filtering
+- Troubleshooting and monitoring
+
+#### 🖥️ **[Express API Guide](EXPRESS_API_GUIDE.md)**
+Complete setup and testing guide for the Express REST API (port 5000):
+- Authentication and JWT setup
+- All API endpoints with examples
+- Security features and rate limiting
+- Error handling and validation
+- Performance optimization
+
+#### 📖 **[Swagger UI Guide](SWAGGER_UI_GUIDE.md)**
+Interactive API documentation and testing interface (port 8080):
+- Swagger UI setup and configuration
+- Interactive endpoint testing
+- Authentication workflow
+- CURL command generation
+- CORS configuration for external access
+
+#### 🧪 **[CURL Testing Guide](CURL_TESTING_GUIDE.md)**
+Comprehensive command-line API testing with mock data:
+- Complete CURL testing procedures for all endpoints
+- Mock data examples for every operation
+- Authentication flow testing with real examples
+- Performance testing and error scenario validation
+- Automated test scripts and troubleshooting
+
+### Quick Reference Commands
+
+```bash
+# Start all servers (automated)
+./start-servers.sh
+
+# Or start individually:
+cd Database && npm start        # Port 3001 - JSON Server
+cd Back-End && npm start        # Port 5000 - Express API  
+cd swagger-ui && npm start      # Port 8080 - Swagger UI
+
+# Run comprehensive tests
+cd curl-scripts && ./run-all-tests.sh
+
+# Access services:
+# Swagger UI:     http://localhost:8080
+# Express API:    http://localhost:5000/api/health
+# JSON Server:    http://localhost:3001/users
+```
+
 ## � Quick Start Guide
 
 ### Prerequisites
@@ -479,19 +540,19 @@ todo-reactjs-18/
 - npm or yarn
 - Git
 
-### 📂 3-Folder Architecture
+### 📂 3-Server Architecture
 
-This application is organized into three main folders:
+This application is organized into three main servers:
 1. **Database** - JSON Server (Port 3001) - File-based database with management scripts
 2. **Back-End** - Express.js API (Port 5000) - REST API server with JWT authentication  
-3. **Front-End** - React 18 (Port 3000) - User interface application
+3. **Swagger UI** - Documentation & Testing (Port 8080) - Interactive API documentation
 
 ### Development Workflow
 
 The development follows this sequence:
 1. **First**: Start Database (JSON Server)
 2. **Second**: Start Back-End (Express.js REST API)  
-3. **Third**: Start Front-End (React Application)
+3. **Third**: Start Swagger UI (Documentation & Testing)
 
 ### Development Setup
 
