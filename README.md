@@ -1,10 +1,15 @@
 # Todo ReactJS 18 Application
 
-A modern, full-stack todo application built with ReactJS 18, featuring user authentication, profile management, and comprehensive CRUD operations.
+A simple, full-stack todo application built with ReactJS 18 frontend, Express.js backend, and JSON Server database, featuring user authentication, profile management, and comprehensive CRUD operations.
 
 ## 📋 Overview
 
-This project is a complete todo management system that allows users to create accounts, manage their personal todo lists, and update their profiles. The application follows modern web development practices with a React frontend, Express.js backend, and JSON Server for data persistence.
+This project is a complete todo management system organized into three main folders:
+1. **Front-End** - React 18 application
+2. **Back-End** - Express.js REST API server 
+3. **Database** - JSON Server with data files and management scripts
+
+The application allows users to create accounts, manage their personal todo lists, and update their profiles using a simple file-based database system.
 
 ## ✨ Features
 
@@ -108,27 +113,27 @@ This project is a complete todo management system that allows users to create ac
 
 ## 🛠 Tech Stack
 
-### Frontend
+### Front-End (Port 3000)
 - **React 18** - Latest React with concurrent features
 - **React Router** - Client-side routing and navigation
 - **Axios** - HTTP client for API requests
-- **CSS Modules/Styled Components** - Component styling
+- **CSS Modules** - Component styling
 - **React Hook Form** - Form validation and management
 
-### Backend
+### Back-End (Port 5000)
 - **Node.js** - JavaScript runtime environment
 - **Express.js** - Web application framework
-- **JSON Server** - File-based REST API and database
 - **JWT** - JSON Web Tokens for authentication
-- **bcrypt** - Password hashing and security
+- **bcryptjs** - Password hashing and security
 - **CORS** - Cross-origin resource sharing
 - **Morgan** - HTTP request logger
-- **Multer** - File upload handling
+- **Express Validator** - Request validation
+- **Axios** - HTTP client to communicate with JSON Server
 
-### Database
-- **JSON Server** - File-based database using JSON
-- **File Structure**: Separate JSON files for users and todos
-- **Data Validation**: Schema validation for all data operations
+### Database (Port 3001)
+- **JSON Server** - File-based REST API database
+- **JSON Files**: users.json, todos.json, user-todo-relations.json
+- **Management Scripts**: Start, stop, restart server scripts
 
 ## 📊 Data Models
 
@@ -467,12 +472,26 @@ todo-reactjs-18/
 └── README.md
 ```
 
-## 🔧 Installation & Setup
+## � Quick Start Guide
 
 ### Prerequisites
 - Node.js (v16 or higher)
 - npm or yarn
 - Git
+
+### 📂 3-Folder Architecture
+
+This application is organized into three main folders:
+1. **Database** - JSON Server (Port 3001) - File-based database with management scripts
+2. **Back-End** - Express.js API (Port 5000) - REST API server with JWT authentication  
+3. **Front-End** - React 18 (Port 3000) - User interface application
+
+### Development Workflow
+
+The development follows this sequence:
+1. **First**: Start Database (JSON Server)
+2. **Second**: Start Back-End (Express.js REST API)  
+3. **Third**: Start Front-End (React Application)
 
 ### Development Setup
 
@@ -482,53 +501,79 @@ todo-reactjs-18/
    cd todo-reactjs-18
    ```
 
-2. **Install dependencies**
+2. **Setup Database (JSON Server)**
    ```bash
-   # Install server dependencies
-   cd server && npm install
-
-   # Install client dependencies
-   cd ../client && npm install
-
-   # Install JSON Server globally (optional)
-   npm install -g json-server
-   ```
-
-3. **Setup environment variables**
-   ```bash
-   # Create .env file in server directory
-   cp server/.env.example server/.env
+   # Install JSON Server dependencies
+   cd Database
+   npm install
    
-   # Update environment variables
-   JWT_SECRET=your_jwt_secret_key
-   PORT=5000
-   CLIENT_URL=http://localhost:3000
+   # Start JSON Server (Port 3001)
+   npm start
+   # OR using scripts
+   cd scripts && ./start-server.sh
    ```
 
-4. **Initialize database**
+3. **Setup Back-End (Express.js API)**
    ```bash
-   # Create initial JSON files
-   mkdir database
-   echo '[]' > database/users.json
-   echo '[]' > database/todos.json
+   # Install backend dependencies
+   cd Back-End
+   npm install
+   
+   # Create environment file
+   cp .env.example .env
+   # Edit .env with your configuration
+   
+   # Start Express server (Port 5000)
+   npm run dev
    ```
 
-5. **Start development servers**
+4. **Setup Front-End (React App)**
    ```bash
-   # Terminal 1: Start JSON Server (Port 3001)
-   cd database && json-server --watch users.json todos.json --port 3001
+   # Install frontend dependencies (will be created next)
+   cd Front-End
+   npm install
+   
+   # Start React development server (Port 3000)
+   npm start
+   ```
 
-   # Terminal 2: Start Express Server (Port 5000)
-   cd server && npm run dev
+5. **Start All Services (3 Terminals)**
+   ```bash
+   # Terminal 1: Database (Port 3001)
+   cd Database && npm start
 
-   # Terminal 3: Start React Client (Port 3000)
-   cd client && npm start
+   # Terminal 2: Back-End API (Port 5000)  
+   cd Back-End && npm run dev
+
+   # Terminal 3: Front-End React (Port 3000)
+   cd Front-End && npm start
    ```
 
 6. **Access the application**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:5000
-   - JSON Server: http://localhost:3001
+   - Frontend React App: http://localhost:3000
+   - Backend Express API: http://localhost:5000  
+   - JSON Server Database: http://localhost:3001
+   - Health Check: http://localhost:5000/health
+
+## 🔄 Implementation Status
+
+### ✅ Completed
+- **Database Folder**: ✅ Complete
+  - JSON data files (users, todos, relations)
+  - Management scripts (start, stop, restart)
+  - Sample data and documentation
+  
+- **Back-End Folder**: ✅ Complete  
+  - Express.js server with JWT authentication
+  - REST API routes (auth, users, todos, categories)
+  - Middleware (auth, error handling, logging)
+  - Database service for JSON Server integration
+
+### 🔄 In Progress  
+- **Front-End Folder**: 🚧 Next Step
+  - React 18 application to be created
+  - Components, pages, and services
+  - Integration with Back-End API
 
 ## 🧪 Testing
 

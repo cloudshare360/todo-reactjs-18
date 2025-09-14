@@ -1,0 +1,1298 @@
+openapi: 3.0.3
+info:
+  title: Todo App REST API
+  description: |
+    A comprehensive REST API for a Todo application built with Express.js and JSON Server.
+    
+    ## Features
+    - User registration and authentication
+    - Todo CRUD operations
+    - Category management
+    - User-Todo relationships
+    - JWT-based authentication
+    
+    ## Authentication
+    Most endpoints require JWT authentication. Include the token in the Authorization header:
+    ```
+    Authorization: Bearer <your-jwt-token>
+    ```
+    
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@todoapp.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: /api-proxy
+    description: Proxied API Server (Recommended for Codespaces)
+  - url: http://localhost:5000
+    description: Local Development Express Server
+  - url: http://localhost:3001
+    description: Local Development JSON Server
+  - url: http://localhost:3001
+    description: JSON Server (Database)
+
+tags:
+  - name: Authentication
+    description: User registration, login, and authentication
+  - name: Users
+    description: User profile management
+  - name: Todos
+    description: Todo CRUD operations
+  - name: Categories
+    description: Category management
+  - name: Relations
+    description: User-Todo relationships
+
+paths:
+  # Authentication Endpoints
+  /api/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      description: Create a new user account with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+                - firstName
+                - lastName
+              properties:
+                username:
+                  type: string
+                  minLength: 3
+                  maxLength: 30
+                  pattern: '^[a-zA-Z0-9_]+$'
+                  example: "johndoe"
+                email:
+                  type: string
+                  format: email
+                  example: "john.doe@example.com"
+                password:
+                  type: string
+                  minLength: 6
+                  pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)'
+                  example: "Password123"
+                firstName:
+                  type: string
+                  minLength: 1
+                  maxLength: 50
+                  example: "John"
+                lastName:
+                  type: string
+                  minLength: 1
+                  maxLength: 50
+                  example: "Doe"
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Validation error or user already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login user
+      description: Authenticate user with username/email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  description: Username or email address
+                  example: "johndoe"
+                password:
+                  type: string
+                  example: "Password123"
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Logout user
+      description: Logout the authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /api/auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: Get current user profile
+      description: Get the profile of the authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+
+  /api/auth/change-password:
+    post:
+      tags:
+        - Authentication
+      summary: Change user password
+      description: Change the password of the authenticated user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - currentPassword
+                - newPassword
+              properties:
+                currentPassword:
+                  type: string
+                  example: "OldPassword123"
+                newPassword:
+                  type: string
+                  minLength: 6
+                  pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)'
+                  example: "NewPassword123"
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  # User Endpoints
+  /api/users/profile:
+    get:
+      tags:
+        - Users
+      summary: Get user profile
+      description: Get the profile of the authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+
+    put:
+      tags:
+        - Users
+      summary: Update user profile
+      description: Update the profile of the authenticated user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  minLength: 1
+                  maxLength: 50
+                  example: "John"
+                lastName:
+                  type: string
+                  minLength: 1
+                  maxLength: 50
+                  example: "Doe"
+                email:
+                  type: string
+                  format: email
+                  example: "john.doe@example.com"
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Profile updated successfully"
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+
+  /api/users/preferences:
+    patch:
+      tags:
+        - Users
+      summary: Update user preferences
+      description: Update user preferences like theme, language, notifications
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                preferences:
+                  $ref: '#/components/schemas/UserPreferences'
+      responses:
+        '200':
+          description: Preferences updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Preferences updated successfully"
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+
+  /api/users/stats:
+    get:
+      tags:
+        - Users
+      summary: Get user statistics
+      description: Get statistics about user's todos
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      stats:
+                        $ref: '#/components/schemas/UserStats'
+
+  /api/users/deactivate:
+    post:
+      tags:
+        - Users
+      summary: Deactivate user account
+      description: Deactivate the user account
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Account deactivated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /api/users/account:
+    delete:
+      tags:
+        - Users
+      summary: Delete user account
+      description: Permanently delete user account and all associated data
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Account deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  # Todo Endpoints
+  /api/todos:
+    get:
+      tags:
+        - Todos
+      summary: Get todos
+      description: Get todos for the authenticated user with filtering and pagination
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          description: Filter by todo status
+          schema:
+            type: string
+            enum: [pending, in-progress, completed]
+        - name: priority
+          in: query
+          description: Filter by todo priority
+          schema:
+            type: string
+            enum: [low, medium, high, urgent]
+        - name: category
+          in: query
+          description: Filter by category name
+          schema:
+            type: string
+        - name: search
+          in: query
+          description: Search in title, description, and tags
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number for pagination
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: sortBy
+          in: query
+          description: Field to sort by
+          schema:
+            type: string
+            default: createdAt
+        - name: sortOrder
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Todos retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      todos:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Todo'
+                      pagination:
+                        $ref: '#/components/schemas/Pagination'
+
+    post:
+      tags:
+        - Todos
+      summary: Create todo
+      description: Create a new todo for the authenticated user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoInput'
+      responses:
+        '201':
+          description: Todo created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Todo created successfully"
+                  data:
+                    type: object
+                    properties:
+                      todo:
+                        $ref: '#/components/schemas/Todo'
+
+  /api/todos/{id}:
+    get:
+      tags:
+        - Todos
+      summary: Get todo by ID
+      description: Get a specific todo by its ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Todo ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Todo retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      todo:
+                        $ref: '#/components/schemas/Todo'
+        '404':
+          description: Todo not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Todos
+      summary: Update todo
+      description: Update a todo completely
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Todo ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoInput'
+      responses:
+        '200':
+          description: Todo updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Todo updated successfully"
+                  data:
+                    type: object
+                    properties:
+                      todo:
+                        $ref: '#/components/schemas/Todo'
+
+    delete:
+      tags:
+        - Todos
+      summary: Delete todo
+      description: Delete a todo
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Todo ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Todo deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /api/todos/{id}/status:
+    patch:
+      tags:
+        - Todos
+      summary: Update todo status
+      description: Update only the status of a todo
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Todo ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [pending, in-progress, completed]
+                  example: "completed"
+      responses:
+        '200':
+          description: Todo status updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Todo status updated successfully"
+                  data:
+                    type: object
+                    properties:
+                      todo:
+                        $ref: '#/components/schemas/Todo'
+
+  /api/todos/bulk-delete:
+    post:
+      tags:
+        - Todos
+      summary: Bulk delete todos
+      description: Delete multiple todos at once
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - todoIds
+              properties:
+                todoIds:
+                  type: array
+                  items:
+                    type: string
+                  example: ["1", "2", "3"]
+      responses:
+        '200':
+          description: Bulk delete completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Successfully deleted 2 todos"
+                  data:
+                    type: object
+                    properties:
+                      deleted:
+                        type: array
+                        items:
+                          type: string
+                      errors:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            message:
+                              type: string
+
+  # Category Endpoints
+  /api/categories:
+    get:
+      tags:
+        - Categories
+      summary: Get categories
+      description: Get all categories for the authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      categories:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Category'
+
+    post:
+      tags:
+        - Categories
+      summary: Create category
+      description: Create a new category
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryInput'
+      responses:
+        '201':
+          description: Category created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Category created successfully"
+                  data:
+                    type: object
+                    properties:
+                      category:
+                        $ref: '#/components/schemas/Category'
+
+  /api/categories/{id}:
+    get:
+      tags:
+        - Categories
+      summary: Get category by ID
+      description: Get a specific category by its ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Category ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Category retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      category:
+                        $ref: '#/components/schemas/Category'
+
+    put:
+      tags:
+        - Categories
+      summary: Update category
+      description: Update a category
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Category ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryInput'
+      responses:
+        '200':
+          description: Category updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Category updated successfully"
+                  data:
+                    type: object
+                    properties:
+                      category:
+                        $ref: '#/components/schemas/Category'
+
+    delete:
+      tags:
+        - Categories
+      summary: Delete category
+      description: Delete a category (cannot delete default categories or categories in use)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Category ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Category deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  # JSON Server Direct Endpoints (for testing)
+  /users:
+    get:
+      tags:
+        - Relations
+      summary: Get all users (JSON Server)
+      description: Direct access to JSON Server users endpoint
+      responses:
+        '200':
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+  /todos:
+    get:
+      tags:
+        - Relations
+      summary: Get all todos (JSON Server)
+      description: Direct access to JSON Server todos endpoint
+      parameters:
+        - name: userId
+          in: query
+          description: Filter todos by user ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Todos retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todo'
+
+  /userTodoRelations:
+    get:
+      tags:
+        - Relations
+      summary: Get user-todo relations
+      description: Get user-todo relationships and categories
+      responses:
+        '200':
+          description: Relations retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserTodoRelations'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "1"
+        username:
+          type: string
+          example: "johndoe"
+        email:
+          type: string
+          format: email
+          example: "john.doe@example.com"
+        firstName:
+          type: string
+          example: "John"
+        lastName:
+          type: string
+          example: "Doe"
+        avatar:
+          type: string
+          example: ""
+        lastLoginAt:
+          type: string
+          format: date-time
+          nullable: true
+        loginAttempts:
+          type: integer
+          example: 0
+        accountLockedUntil:
+          type: string
+          format: date-time
+          nullable: true
+        isActive:
+          type: boolean
+          example: true
+        preferences:
+          $ref: '#/components/schemas/UserPreferences'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UserPreferences:
+      type: object
+      properties:
+        theme:
+          type: string
+          enum: [light, dark, system]
+          example: "light"
+        language:
+          type: string
+          example: "en"
+        notifications:
+          type: object
+          properties:
+            browser:
+              type: boolean
+              example: true
+            inApp:
+              type: boolean
+              example: true
+        timezone:
+          type: string
+          example: "UTC"
+
+    UserStats:
+      type: object
+      properties:
+        totalTodos:
+          type: integer
+          example: 25
+        completedTodos:
+          type: integer
+          example: 15
+        pendingTodos:
+          type: integer
+          example: 8
+        inProgressTodos:
+          type: integer
+          example: 2
+        overdueTodos:
+          type: integer
+          example: 3
+        completionRate:
+          type: integer
+          example: 60
+        categoryCounts:
+          type: object
+          example:
+            Work: 10
+            Personal: 8
+            Shopping: 7
+        priorityCounts:
+          type: object
+          example:
+            high: 5
+            medium: 12
+            low: 8
+
+    Todo:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "1"
+        userId:
+          type: string
+          example: "1"
+        title:
+          type: string
+          example: "Complete project documentation"
+        description:
+          type: string
+          example: "Write comprehensive API documentation for the todo app"
+        status:
+          type: string
+          enum: [pending, in-progress, completed]
+          example: "in-progress"
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+          example: "high"
+        category:
+          type: string
+          example: "Work"
+        tags:
+          type: array
+          items:
+            type: string
+          example: ["documentation", "api", "urgent"]
+        dueDate:
+          type: string
+          format: date-time
+          nullable: true
+        reminderDate:
+          type: string
+          format: date-time
+          nullable: true
+        estimatedTime:
+          type: integer
+          nullable: true
+          description: "Estimated time in minutes"
+        actualTime:
+          type: integer
+          nullable: true
+          description: "Actual time spent in minutes"
+        isRecurring:
+          type: boolean
+          example: false
+        recurringPattern:
+          type: object
+          nullable: true
+        parentTodoId:
+          type: string
+          nullable: true
+        attachments:
+          type: array
+          items:
+            type: object
+        comments:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              text:
+                type: string
+              createdAt:
+                type: string
+                format: date-time
+        dependencies:
+          type: object
+          properties:
+            blockedBy:
+              type: array
+              items:
+                type: string
+            blocking:
+              type: array
+              items:
+                type: string
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+        isArchived:
+          type: boolean
+          example: false
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    TodoInput:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          example: "Complete project documentation"
+        description:
+          type: string
+          maxLength: 1000
+          example: "Write comprehensive API documentation for the todo app"
+        status:
+          type: string
+          enum: [pending, in-progress, completed]
+          example: "pending"
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+          example: "medium"
+        category:
+          type: string
+          maxLength: 50
+          example: "Work"
+        tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 30
+        dueDate:
+          type: string
+          format: date-time
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "1"
+        userId:
+          type: string
+          example: "1"
+        name:
+          type: string
+          example: "Work"
+        description:
+          type: string
+          example: "Work-related tasks"
+        color:
+          type: string
+          pattern: '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$'
+          example: "#3498db"
+        icon:
+          type: string
+          example: "💼"
+        isDefault:
+          type: boolean
+          example: false
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CategoryInput:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: "Work"
+        description:
+          type: string
+          maxLength: 200
+          example: "Work-related tasks"
+        color:
+          type: string
+          pattern: '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$'
+          example: "#3498db"
+        icon:
+          type: string
+          maxLength: 10
+          example: "💼"
+
+    UserTodoRelations:
+      type: object
+      properties:
+        userTodoRelations:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              userId:
+                type: string
+              todoId:
+                type: string
+              relationshipType:
+                type: string
+              permissions:
+                type: array
+                items:
+                  type: string
+              createdAt:
+                type: string
+                format: date-time
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          example: 1
+        totalPages:
+          type: integer
+          example: 5
+        totalItems:
+          type: integer
+          example: 47
+        limit:
+          type: integer
+          example: 10
+
+    AuthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "User registered successfully"
+        data:
+          type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+            token:
+              type: string
+              example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Operation completed successfully"
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+              example: "Validation failed"
+            details:
+              type: array
+              items:
+                type: object

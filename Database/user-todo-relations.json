@@ -1,0 +1,47 @@
+{
+  "userTodoRelations": [
+    {
+      "id": "1",
+      "userId": "1",
+      "todoId": "1",
+      "relationshipType": "owner",
+      "permissions": ["read", "write", "delete"],
+      "createdAt": "2025-09-14T00:00:00.000Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": "1",
+      "userId": "1",
+      "name": "General",
+      "description": "General tasks and reminders",
+      "color": "#3498db",
+      "icon": "📝",
+      "isDefault": true,
+      "createdAt": "2025-09-14T00:00:00.000Z",
+      "updatedAt": "2025-09-14T00:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "userId": "1",
+      "name": "Work",
+      "description": "Work-related tasks",
+      "color": "#e74c3c",
+      "icon": "💼",
+      "isDefault": false,
+      "createdAt": "2025-09-14T00:00:00.000Z",
+      "updatedAt": "2025-09-14T00:00:00.000Z"
+    },
+    {
+      "id": "3",
+      "userId": "1",
+      "name": "Personal",
+      "description": "Personal tasks and goals",
+      "color": "#2ecc71",
+      "icon": "👤",
+      "isDefault": false,
+      "createdAt": "2025-09-14T00:00:00.000Z",
+      "updatedAt": "2025-09-14T00:00:00.000Z"
+    }
+  ]
+}

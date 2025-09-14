@@ -1,0 +1,8 @@
+{
+  "/api/auth/login": "/login",
+  "/api/auth/register": "/register",
+  "/api/users/*": "/users/$1",
+  "/api/todos/*": "/todos/$1", 
+  "/api/categories/*": "/categories/$1",
+  "/api/relations/*": "/userTodoRelations/$1"
+}

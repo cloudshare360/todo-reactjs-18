@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo App API Documentation</title>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css" />
+  <style>
+    html {
+      box-sizing: border-box;
+      overflow: -moz-scrollbars-vertical;
+      overflow-y: scroll;
+    }
+    *, *:before, *:after {
+      box-sizing: inherit;
+    }
+    body {
+      margin:0;
+      background: #fafafa;
+    }
+    .swagger-ui .topbar { display: none; }
+    .custom-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .custom-header h1 {
+      margin: 0;
+      font-size: 2.5em;
+      font-weight: 300;
+    }
+    .custom-header p {
+      margin: 10px 0 0 0;
+      font-size: 1.2em;
+      opacity: 0.9;
+    }
+    .server-info {
+      background: #f8f9fa;
+      padding: 15px;
+      margin: 20px;
+      border-radius: 8px;
+      border-left: 4px solid #007bff;
+    }
+    .server-info h3 {
+      margin-top: 0;
+      color: #007bff;
+    }
+    .endpoint {
+      display: inline-block;
+      background: #e9ecef;
+      padding: 4px 8px;
+      margin: 2px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <div class="custom-header">
+    <h1>📋 Todo App REST API</h1>
+    <p>Comprehensive API documentation for the Todo application</p>
+  </div>
+
+  <div class="server-info">
+    <h3>🔗 Server Information</h3>
+    <p><strong>Express API Server:</strong> <span class="endpoint">http://localhost:5000</span></p>
+    <p><strong>JSON Server (Database):</strong> <span class="endpoint">http://localhost:3001</span></p>
+    <p><strong>Health Check:</strong> <span class="endpoint">GET /health</span></p>
+    <p><strong>API Base:</strong> <span class="endpoint">/api</span></p>
+  </div>
+
+  <div id="swagger-ui"></div>
+
+  <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js"></script>
+  <script>
+    window.onload = function() {
+      // Begin Swagger UI call region
+      const ui = SwaggerUIBundle({
+        url: './api-docs.yaml',
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout",
+        tryItOutEnabled: true,
+        requestInterceptor: function(request) {
+          // Add custom headers or modify requests if needed
+          console.log('Making request:', request);
+          return request;
+        },
+        responseInterceptor: function(response) {
+          // Handle responses if needed
+          console.log('Received response:', response);
+          return response;
+        },
+        onComplete: function() {
+          console.log('Swagger UI loaded successfully');
+        }
+      });
+      // End Swagger UI call region
+
+      window.ui = ui;
+    };
+  </script>
+</body>
+</html>

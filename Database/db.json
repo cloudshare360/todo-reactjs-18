@@ -1,0 +1,108 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "username": "admin",
+      "email": "admin@example.com",
+      "password": "$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+      "firstName": "Admin",
+      "lastName": "User",
+      "avatar": "",
+      "lastLoginAt": null,
+      "loginAttempts": 0,
+      "accountLockedUntil": null,
+      "isActive": true,
+      "preferences": {
+        "theme": "light",
+        "language": "en",
+        "notifications": {
+          "browser": true,
+          "inApp": true
+        },
+        "timezone": "UTC"
+      },
+      "createdAt": "2025-09-14T00:00:00.000Z",
+      "updatedAt": "2025-09-14T00:00:00.000Z"
+    }
+  ],
+  "todos": [
+    {
+      "id": "1",
+      "userId": "1",
+      "title": "Welcome to Todo App",
+      "description": "This is your first todo item. You can edit or delete it.",
+      "status": "pending",
+      "priority": "medium",
+      "category": "General",
+      "tags": ["welcome", "getting-started"],
+      "dueDate": null,
+      "reminderDate": null,
+      "estimatedTime": null,
+      "actualTime": null,
+      "isRecurring": false,
+      "recurringPattern": null,
+      "parentTodoId": null,
+      "attachments": [],
+      "comments": [
+        {
+          "id": "1",
+          "text": "Don't forget to explore all the features!",
+          "createdAt": "2025-09-14T00:00:00.000Z"
+        }
+      ],
+      "dependencies": {
+        "blockedBy": [],
+        "blocking": []
+      },
+      "completedAt": null,
+      "isArchived": false,
+      "createdAt": "2025-09-14T00:00:00.000Z",
+      "updatedAt": "2025-09-14T00:00:00.000Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": "1",
+      "userId": "1",
+      "name": "General",
+      "description": "General tasks and reminders",
+      "color": "#3498db",
+      "icon": "📝",
+      "isDefault": true,
+      "createdAt": "2025-09-14T00:00:00.000Z",
+      "updatedAt": "2025-09-14T00:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "userId": "1",
+      "name": "Work",
+      "description": "Work-related tasks",
+      "color": "#e74c3c",
+      "icon": "💼",
+      "isDefault": false,
+      "createdAt": "2025-09-14T00:00:00.000Z",
+      "updatedAt": "2025-09-14T00:00:00.000Z"
+    },
+    {
+      "id": "3",
+      "userId": "1",
+      "name": "Personal",
+      "description": "Personal tasks and goals",
+      "color": "#2ecc71",
+      "icon": "👤",
+      "isDefault": false,
+      "createdAt": "2025-09-14T00:00:00.000Z",
+      "updatedAt": "2025-09-14T00:00:00.000Z"
+    }
+  ],
+  "user-todo-relations": [
+    {
+      "id": "1",
+      "userId": "1",
+      "todoId": "1",
+      "relationshipType": "owner",
+      "permissions": ["read", "write", "delete"],
+      "createdAt": "2025-09-14T00:00:00.000Z"
+    }
+  ]
+}

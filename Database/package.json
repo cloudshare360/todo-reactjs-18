@@ -1,0 +1,25 @@
+{
+  "name": "todo-app-database",
+  "version": "1.0.0",
+  "description": "JSON Server database for Todo Application",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "start:legacy": "json-server --watch db.json --port 3001 --host 0.0.0.0 --routes routes.json",
+    "start:dev": "json-server --watch db.json --port 3001 --host 0.0.0.0 --routes routes.json --delay 200",
+    "backup": "cp *.json backup/backup-$(date +%Y%m%d-%H%M%S)/",
+    "restore": "echo 'Please specify backup file to restore'",
+    "reset": "git checkout -- *.json"
+  },
+  "keywords": [
+    "json-server",
+    "database",
+    "todo",
+    "rest-api"
+  ],
+  "author": "cloudshare360",
+  "license": "MIT",
+  "devDependencies": {
+    "json-server": "^0.17.4"
+  }
+}
